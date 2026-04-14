@@ -6,9 +6,9 @@ interface LetterProps {
 }
 
 const colorClasses: Record<LetterColor, string> = {
-  gray: 'text-neutral-400/60',
-  green: 'bg-wordle-green text-white',
-  yellow: 'bg-wordle-yellow text-white',
+  gray: 'bg-warm-gray border-warm-gray text-cream',
+  green: 'bg-olive border-olive text-cream',
+  yellow: 'bg-terracotta border-terracotta text-cream',
 };
 
 export const Letter = ({ value, color }: LetterProps) => {
@@ -16,16 +16,17 @@ export const Letter = ({ value, color }: LetterProps) => {
   return (
     <div
       className={[
-        'flex items-center justify-center',
+        'flex items-center justify-center uppercase',
         'w-[var(--size)] h-[var(--size)]',
-        'border-2 rounded-[5px] transition-transform duration-200',
-        isEmpty
-          ? 'scale-[0.7] border-slate-400/25'
-          : 'border-slate-400/50',
-        color ? colorClasses[color] : '',
+        'border-2 rounded-md font-bold transition-colors duration-200',
+        color
+          ? colorClasses[color]
+          : isEmpty
+            ? 'border-sand bg-transparent'
+            : 'border-walnut/30 bg-transparent text-walnut',
       ].join(' ')}
     >
-      <span className="flex items-center justify-center w-0 h-0">{value}</span>
+      {value}
     </div>
   );
 };

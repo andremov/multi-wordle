@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { getWordles } from '../utils/words';
+import { dayKey, getDailyWordles } from '../utils/words';
 
 export interface Wordle {
   solved: number;
@@ -9,23 +9,30 @@ export interface Wordle {
 }
 
 interface WordleState {
+  dayKey: string;
   wordleList: Wordle[];
-  loadWordles: (n: number) => void;
-  resetWordles: (n: number) => void;
+  loadToday: (count: number) => { rollover: boolean };
   markSolved: (value: string, numGuesses: number) => void;
   updateScore: (value: string, score: number) => void;
 }
 
-const makeList = (n: number): Wordle[] =>
-  getWordles(n).map((value) => ({ solved: 0, value, score: 0 }));
+const makeList = (count: number, key: string): Wordle[] =>
+  getDailyWordles(count, key).map((value) => ({ solved: 0, value, score: 0 }));
 
 export const useWordleStore = create<WordleState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
+      dayKey: '',
       wordleList: [],
-      loadWordles: (n) =>
-        set((s) => (s.wordleList.length > 0 ? s : { wordleList: makeList(n) })),
-      resetWordles: (n) => set({ wordleList: makeList(n) }),
+      loadToday: (count) => {
+        const today = dayKey();
+        const current = get();
+        if (current.dayKey === today && current.wordleList.length > 0) {
+          return { rollover: false };
+        }
+        set({ dayKey: today, wordleList: makeList(count, today) });
+        return { rollover: true };
+      },
       markSolved: (value, numGuesses) =>
         set((s) => ({
           wordleList: s.wordleList.map((w) =>

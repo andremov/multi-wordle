@@ -10,7 +10,7 @@ interface GuessDisplayProps {
 }
 
 export const GuessDisplay = ({ guess }: GuessDisplayProps) => (
-  <div className="flex items-center justify-between mb-1 text-lg font-bold [--size:24px]">
+  <div className="flex items-center justify-center gap-1 mb-1 text-lg font-bold [--size:26px]">
     {guess.map((item, key) => (
       <Letter key={key} value={item.letter} color={item.color} />
     ))}
@@ -18,7 +18,7 @@ export const GuessDisplay = ({ guess }: GuessDisplayProps) => (
 );
 
 export const BlankGuessDisplay = () => (
-  <div className="flex items-center justify-between mb-1 text-lg font-bold [--size:24px]">
+  <div className="flex items-center justify-center gap-1 mb-1 text-lg font-bold [--size:26px]">
     {[...new Array(5)].map((_, key) => (
       <Letter key={key} />
     ))}

@@ -1,6 +1,11 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { BlankGuessDisplay, GuessDisplay } from './guess-display';
-import { isSolved, parseGuess, wordleScore } from '../utils/words';
+import {
+  getSolvedLetters,
+  isSolved,
+  parseGuess,
+  wordleScore,
+} from '../utils/words';
 import { useWordleStore, type Wordle } from '../services/wordle-store';
 import { useGuessStore } from '../services/guess-store';
 
@@ -21,8 +26,27 @@ export const Game = ({ wordle }: GameProps) => {
     }
   }, [guessList, wordle.value, markSolved, updateScore]);
 
+  const solvedLetters = useMemo(
+    () => getSolvedLetters(wordle.value, guessList),
+    [wordle.value, guessList],
+  );
+
   return (
-    <div className="inline-block min-h-[70px] min-w-[268px] sm:min-w-[225px] md:min-w-[220px] lg:min-w-[224px] xl:min-w-[280px] box-border mr-[10px] last:mr-0 rounded-sm border border-neutral-400 px-4 py-2 dark:border-neutral-600">
+    <div className="box-border flex min-w-[170px] flex-col rounded-md border border-sand bg-cream-tinted/60 px-3 py-2">
+      <div className="mb-2 flex items-center justify-center gap-1">
+        {solvedLetters.map((letter, i) => (
+          <span
+            key={i}
+            className={`inline-flex h-5 w-5 items-center justify-center rounded-sm text-[10px] font-bold uppercase ${
+              letter
+                ? 'bg-olive text-cream'
+                : 'border border-sand text-walnut/30'
+            }`}
+          >
+            {letter ?? ''}
+          </span>
+        ))}
+      </div>
       {guessList.length > 0 ? (
         guessList.map((item, key) => (
           <GuessDisplay
