@@ -95,7 +95,7 @@ const App = () => {
       <Toaster />
 
       <header className="flex w-full items-center justify-center gap-3 border-b border-sand py-3">
-        <img src="/favicon.svg" alt="" className="h-8 w-8 -rotate-12" />
+        <img src="/logo.svg" alt="" className="h-8 w-8 -rotate-12" />
         <h1 className="font-serif text-3xl font-bold">hundredle</h1>
       </header>
 
