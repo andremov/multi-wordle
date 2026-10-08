@@ -1,3 +1,4 @@
+// andremov-brand-check-unique: the guess being typed, as large letter tiles over the boards
 import { useGuessStore } from '../services/guess-store';
 import { Letter } from './letter';
 

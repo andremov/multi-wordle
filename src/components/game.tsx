@@ -1,3 +1,4 @@
+// andremov-brand-check-unique: one of the hundred small boards (found-letters strip over its guesses)
 import { useEffect, useMemo } from 'react';
 import { BlankGuessDisplay, GuessDisplay } from './guess-display';
 import {
@@ -32,15 +33,16 @@ export const Game = ({ wordle }: GameProps) => {
   );
 
   return (
-    <div className="box-border flex min-w-[170px] flex-col rounded-md border border-sand bg-cream-tinted/60 px-3 py-2">
+    <div className="box-border flex min-w-[170px] flex-col rounded-md border border-border bg-card px-3 py-2">
       <div className="mb-2 flex items-center justify-center gap-1">
         {solvedLetters.map((letter, i) => (
           <span
             key={i}
-            className={`inline-flex h-5 w-5 items-center justify-center rounded-sm text-[10px] font-bold uppercase ${
+            className={`inline-flex h-5 w-5 items-center justify-center rounded-[4px] text-[10px] font-bold uppercase ${
               letter
-                ? 'bg-olive text-cream'
-                : 'border border-sand text-walnut/30'
+                ? // andremov-brand-check-ignore: game colour (right letter), as on the tiles
+                  'bg-[#6b7f5e] text-white'
+                : 'border border-border'
             }`}
           >
             {letter ?? ''}

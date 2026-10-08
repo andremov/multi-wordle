@@ -1,3 +1,4 @@
+// andremov-brand-check-unique: each board's rows of letter tiles, sized for a hundred boards on one page
 import { Letter, type LetterColor } from './letter';
 
 export interface ParsedLetter {

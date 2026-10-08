@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
+import { TrophyIcon } from 'lucide-react';
+import { Footer, GameResultDialog, Header, Text } from '@andremov/brand';
+import { Toaster } from '@andremov/brand/ui/sonner';
 import { CurrentGuessDisplay } from './components/current-guess-display';
 import { InfoHeader } from './components/info-header';
 import { Game } from './components/game';
-import { Toaster } from './components/toaster';
 import { useWordleStore } from './services/wordle-store';
 import { useGuessStore } from './services/guess-store';
-import { useToastStore } from './services/toast-store';
 import { isSolved, isValid } from './utils/words';
 
 const DAILY_COUNT = 100;
@@ -17,9 +19,15 @@ const bootDaily = () => {
   }
 };
 
+// one message at a time, replacing the last, like wordle-nextjs
+const say = (msg: string, kind: 'success' | 'error') =>
+  toast[kind](msg, { id: 'hundredle-message', duration: 2000 });
+
 const App = () => {
   const wordleList = useWordleStore((s) => s.wordleList);
+  const guessCount = useGuessStore((s) => s.guessList.length);
   const [shakeKey, setShakeKey] = useState(0);
+  const [resultOpen, setResultOpen] = useState(false);
 
   useEffect(() => {
     bootDaily();
@@ -30,13 +38,13 @@ const App = () => {
 
       if (current.length < 5) {
         setShakeKey((k) => k + 1);
-        useToastStore.getState().push('Not enough letters', 'error');
+        say('Not enough letters', 'error');
         return;
       }
 
       if (!isValid(current)) {
         setShakeKey((k) => k + 1);
-        useToastStore.getState().push('Not in word list', 'error');
+        say('Not in word list', 'error');
         return;
       }
 
@@ -56,19 +64,27 @@ const App = () => {
           newlySolved.length === 1
             ? `Solved! ${totalSolved}/${total}`
             : `${newlySolved.length} solved! ${totalSolved}/${total}`;
-        useToastStore.getState().push(msg, 'success');
+        say(msg, 'success');
+        if (totalSolved === total) setResultOpen(true);
       }
     };
 
     const handleKeyDown = (e: KeyboardEvent) => {
+      // shortcuts (Ctrl+R, Cmd+C) aren't letters, and keys pressed in the result dialog belong to it
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+      if (e.target instanceof Element && e.target.closest('[role="dialog"], button, a, input')) return;
       const guess = useGuessStore.getState();
       if (e.key === 'Backspace') {
         guess.deleteLetter();
       } else if (e.key === 'Enter') {
+        // the guess that finishes the day opens the result dialog and focuses its button during this
+        // keydown; without this, Enter's default action then clicks that button and shuts the dialog
+        e.preventDefault();
         handleSubmit();
       } else {
         const value = e.key.toLocaleUpperCase();
-        if (value.length === 1 && Number.isNaN(Number.parseInt(value))) {
+        // only A to Z: punctuation and accented letters made a guess no board could match
+        if (/^[A-Z]$/.test(value)) {
           guess.addLetter(value);
         }
       }
@@ -91,39 +107,42 @@ const App = () => {
     .sort((a, b) => b.score - a.score);
 
   return (
-    <main className="flex min-h-screen select-none flex-col bg-cream text-walnut">
-      <Toaster />
+    <div className="flex min-h-screen select-none flex-col">
+      <Toaster position="top-center" offset={64} />
 
-      <header className="flex w-full items-center justify-center gap-3 border-b border-sand py-3">
-        <img src="/logo.svg" alt="" className="h-8 w-8 -rotate-12" />
-        <h1 className="font-serif text-3xl font-bold">hundredle</h1>
+      <header className="py-2">
+        <Header variant="block" title="hundredle" />
       </header>
 
-      <InfoHeader />
-      <div key={shakeKey} className={shakeKey > 0 ? 'animate-shake' : ''}>
-        <CurrentGuessDisplay />
-      </div>
+      <main className="flex flex-1 flex-col">
+        <InfoHeader />
+        <div key={shakeKey} className={shakeKey > 0 ? 'animate-shake' : ''}>
+          <CurrentGuessDisplay />
+        </div>
 
-      <div className="flex flex-1 flex-wrap justify-center gap-2 px-4 pb-6">
-        {activeWordles.map((item, key) => (
-          <Game wordle={item} key={key} />
-        ))}
-        {activeWordles.length === 0 && (
-          <div className="font-serif text-xl">Done for today.</div>
-        )}
-      </div>
+        <div className="flex flex-1 flex-wrap justify-center gap-2 px-4 pb-6">
+          {activeWordles.map((item) => (
+            <Game wordle={item} key={item.value} />
+          ))}
+          {wordleList.length > 0 && activeWordles.length === 0 && (
+            <Text variant="title">Done for today.</Text>
+          )}
+        </div>
+      </main>
 
-      <footer className="mt-auto flex justify-center border-t border-sand py-4">
-        <a
-          href="https://andremov.dev"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-warm-gray transition-colors duration-200 hover:text-terracotta"
-        >
-          Built by Andrés Movilla
-        </a>
+      <GameResultDialog
+        open={resultOpen}
+        onOpenChange={setResultOpen}
+        icon={<TrophyIcon />}
+        title="Done for today!"
+        description={`All ${wordleList.length} boards solved. A new hundred tomorrow.`}
+        stats={[{ label: 'Guesses', value: guessCount }]}
+      />
+
+      <footer className="flex justify-center py-4">
+        <Footer variant="minimal" />
       </footer>
-    </main>
+    </div>
   );
 };
 
