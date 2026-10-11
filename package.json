@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "dependencies": {
-    "@andremov/brand": "^0.3.21",
+    "@andremov/brand": "^0.3.22",
     "lucide-react": "^1.53.0",
     "radix-ui": "^1.7.0",
     "react": "^19.3.0",
@@ -13,13 +13,13 @@
     "zustand": "^5.0.12"
   },
   "devDependencies": {
-    "@tailwindcss/vite": "^4.2.2",
+    "@tailwindcss/vite": "^4.3.3",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
-    "@vitejs/plugin-react": "^4.3.4",
-    "tailwindcss": "^4.2.2",
+    "@vitejs/plugin-react": "^4.7.0",
+    "tailwindcss": "^4.3.3",
     "typescript": "^6.0.2",
-    "vite": "^5.4.10"
+    "vite": "^7.3.7"
   },
   "scripts": {
     "dev": "vite",

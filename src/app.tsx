@@ -110,9 +110,10 @@ const App = () => {
     <div className="flex min-h-screen select-none flex-col">
       <Toaster position="top-center" offset={64} />
 
-      <header className="py-2">
+      {/* brand 0.3.22's block Header is its own <header> landmark, so this wrapper is a plain div */}
+      <div className="py-2">
         <Header variant="block" title="hundredle" />
-      </header>
+      </div>
 
       <main className="flex flex-1 flex-col">
         <InfoHeader />
